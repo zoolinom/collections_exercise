@@ -11,6 +11,8 @@
 |
 */
 
+use App\Person;
+
 Route::get('/', function () {
     // return view('welcome');
 
@@ -113,6 +115,107 @@ Route::get('/', function () {
     })->all();
     foreach ($filtered as $key => $value) {
         echo $value . '<br>';
+    }
+    echo '<br/>';
+});
+
+Route::get('/db', function () {
+
+    $persons = Person::all();
+
+    echo 'groupBy age: <br/>';
+    $groupAge = $persons->groupBy('age')->all();
+    foreach ($groupAge as $person) {
+        echo $person . '<br>';
+    }
+    echo '<br/>';
+
+    echo 'filter age greater than 30: <br/>';
+    $ageGreatherThan30 = $persons->filter(function ($item) {
+        return $item->age > 30;
+    });
+    foreach ($ageGreatherThan30 as $person) {
+        echo $person . '<br>';
+    }
+    echo '<br/>';
+
+    echo 'where name is Mark: <br/>';
+    $names = $persons->where('name', 'Mark')->all();
+    foreach ($names as $person) {
+        echo $person . '<br>';
+    }
+    echo '<br/>';
+
+    echo 'whereBetween age 30 - 60: <br/>';
+    $ageBetween = $persons->whereBetween('age', [30, 60]);
+    foreach ($ageBetween as $person) {
+        echo $person . '<br>';
+    }
+    echo '<br/>';
+
+    echo 'pluck name: <br/>';
+    $nameAge = $persons->pluck('name')->all();
+    foreach ($nameAge as $person) {
+        echo $person . '<br>';
+    }
+    echo '<br/>';
+
+    echo 'pluck name(key) => age(value): <br/>';
+    $nameAge = $persons->pluck('age', 'name')->all();
+    foreach ($nameAge as $key => $person) {
+        echo $key . ' -> ' . $person . '<br>';
+    }
+    echo '<br/>';
+
+    echo 'reduce, sum of ages: ';
+    $total = $persons->reduce(function ($carry, $item) {
+        return $carry + $item->age;
+    });
+    echo $total;
+    echo '<br/>';
+
+    echo 'reject if name is Mark: <br/>';
+    $rejectedNames = $persons->reject(function ($person) {
+        return $person->name == 'Mark';
+    })->all();
+    foreach ($rejectedNames as $person) {
+        echo $person . '<br>';
+    }
+    echo '<br/>';
+
+    echo 'map, increase age by 1: <br/>';
+    $persons2 = clone $persons;
+    $changedAges = $persons2->map(function ($person) {
+        $per = $person;
+        ++$per->age;
+        return $per;
+    })->all();
+    foreach ($changedAges as $person) {
+        echo $person . '<br>';
+    }
+    echo '<br/>';
+
+    echo 'transform, increase age by 1: <br/>';
+    $persons3 = clone $persons;
+    $changedItems = $persons3->transform(function ($person) {
+        $per = $person;
+        ++$per->age;
+        return $per;
+    })->all();
+    foreach ($changedItems as $person) {
+        echo $person . '<br>';
+    }
+    echo '<br/>';
+
+    echo 'map, increase age by 1: <br/>';
+    $persons4 = clone $persons;
+    $changedAges = $persons4->map(function ($person) {
+        $per = $person;
+        ++$per->age;
+        return $per;
+    })->all();
+    foreach ($changedAges as $person) {
+        echo $person . '<br>';
     }
     echo '<br/>';
 
