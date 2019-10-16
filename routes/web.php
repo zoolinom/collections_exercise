@@ -120,7 +120,6 @@ Route::get('/', function () {
 });
 
 Route::get('/db', function () {
-
     $persons = Person::all();
 
     echo 'groupBy age: <br/>';
@@ -218,5 +217,82 @@ Route::get('/db', function () {
         echo $person . '<br>';
     }
     echo '<br/>';
+});
+
+Route::get('/db2', function () {
+    $persons = Person::all();
+
+    echo 'filter than pluck: <br/>';
+    $age32 = $persons->filter(function ($item) {
+        return $item->age == 32;
+    })->pluck('name')->all();
+    foreach ($age32 as $person) {
+        echo $person . '<br>';
+    }
+    echo '<br/>';
+
+    echo 'get oldest person: <br/>';
+    $sorted = $persons->sortByDesc('age')->first();
+    echo $sorted;
+    echo '<br/>';
+    // foreach ($sorted as $person) {
+    //     echo $person . '<br>';
+    // }
+    echo '<br/>';
+
+    echo 'get oldest person between 30 and 50 years old: <br/>';
+    $filtered = $persons->reject(function ($value, $key) {
+        return $value->age < 30 || $value->age > 50;
+    })->sortByDesc('age');
+    foreach ($filtered as $person) {
+        echo $person . '<br>';
+    }
+    echo '<br/>';
+
+    echo 'get first 3 youngest persons: <br/>';
+    $filtered = $persons->sortBy('age')->take(3);
+    foreach ($filtered as $person) {
+        echo $person . '<br>';
+    }
+    echo '<br/>';
+
+    echo 'get first 3 youngest persons with most likes: <br/>';
+    $sorted = $persons->sortBy('age')->take(3)->sortByDesc('likes');
+    foreach ($sorted as $person) {
+        echo $person . '<br>';
+    }
+    echo '<br/>';
+
+    echo 'get people with likes: <br/>';
+    $filtered = $persons->filter(function ($person, $key) {
+        return $person->likes > 0;
+    });
+    foreach ($filtered as $person) {
+        echo $person . '<br>';
+    }
+    echo '<br/>';
+
+    echo 'get people: <br/>';
+    $multiplied = $persons->map(function ($person) use ($persons) {
+        $otherPersons = $persons->reject(function ($value) use ($person) {
+            return $value->name == $person->name;
+        });
+        $tmp = $otherPersons->map(function ($item) use ($person) {
+            $temp = [
+                'name' => $person->name,
+                'against' => $item->name,
+                'diff' => abs($person->likes - $item->likes)
+            ];
+            return $temp;
+        });
+        return $tmp;
+    });
+    //dd($multiplied);
+    foreach ($multiplied as $person) {
+        echo $person . '<br>';
+    }
+    echo '<br/>';
+
+
 
 });
