@@ -240,6 +240,13 @@ Route::get('/db2', function () {
     // }
     echo '<br/>';
 
+    echo 'get number of peoples with names: <br/>';
+    $counted = $persons->countBy(function ($person) {
+        return $person->name;
+    });
+    echo $counted;
+    echo '<br/>';
+
     echo 'get oldest person between 30 and 50 years old: <br/>';
     $filtered = $persons->reject(function ($value, $key) {
         return $value->age < 30 || $value->age > 50;
@@ -275,7 +282,7 @@ Route::get('/db2', function () {
     echo 'get people: <br/>';
     $multiplied = $persons->map(function ($person) use ($persons) {
         $otherPersons = $persons->reject(function ($value) use ($person) {
-            return $value->name == $person->name;
+            return $value->id == $person->id;
         });
         $tmp = $otherPersons->map(function ($item) use ($person) {
             $temp = [
@@ -292,7 +299,36 @@ Route::get('/db2', function () {
         echo $person . '<br>';
     }
     echo '<br/>';
+});
 
+Route::get('/db3', function () {
+    $persons = Person::all();
 
+    echo 'get peoples with same names: <br/>';
+    $namesCount = $persons->countBy(function ($person) {
+        return $person->name;
+    });
+    $filtered = $persons->filter(function ($value, $key) use ($namesCount) {
+        return $namesCount[$value->name] > 1;
+    });
+    foreach ($filtered as $name) {
+        echo $name . '<br>';
+    }
+    echo '<br/>';
 
+    echo 'get peoples who are older: <br/>';
+    $multiplied = $persons->mapWithKeys(function ($person) use ($persons) {
+        $filtered = $persons->filter(function ($value, $key) use ($person) {
+            return $value->age > $person->age;
+        });
+        return [$person->id => $filtered];
+    });
+    // dd($multiplied);
+    foreach ($multiplied as $index => $value) {
+        echo 'index: ' . $index . ' </br>';
+        foreach ($value as $test) {
+            echo $test . '<br>';
+        }
+    }
+    echo '<br/>';
 });

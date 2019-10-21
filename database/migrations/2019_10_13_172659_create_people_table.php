@@ -17,6 +17,7 @@ class CreatePeopleTable extends Migration
             $table->bigIncrements('id');
             $table->string('name');
             $table->integer('age');
+            $table->integer('likes');
             $table->timestamps();
         });
     }
