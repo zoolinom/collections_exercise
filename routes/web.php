@@ -217,6 +217,27 @@ Route::get('/db', function () {
         echo $person . '<br>';
     }
     echo '<br/>';
+
+    echo 'get average/max age, average/max likes: <br/>';
+    echo 'Average ages: ' . $persons->avg('age') . '<br/>';
+    echo 'Average likes: ' . $persons->avg('likes') . '<br/>';
+    echo 'Max age: ' . $persons->max('age') . '<br/>';
+    echo 'Max likes: ' . $persons->max('likes') . '<br/>';
+    echo '<br/>';
+
+    echo 'when account is user: <br/>';
+    $collection4 = collect([
+        ['account_id' => 1, 'name' => 'Mark', 'account_type' => 'admin'],
+        ['account_id' => 2, 'name' => 'Jane', 'account_type' => 'user'],
+        ['account_id' => 3, 'name' => 'George', 'account_type' => 'power_user'],
+        ['account_id' => 4, 'name' => 'Ian', 'account_type' => 'user']
+    ]);
+    $map = $collection4->map(function ($person, $key) use ($collection4) {
+        $collection4->when($person['account_type'] == 'user', function ($collection) {
+            return $collection->pluck('name');
+        });
+    });
+    echo $map;
 });
 
 Route::get('/db2', function () {
@@ -299,6 +320,24 @@ Route::get('/db2', function () {
         echo $person . '<br>';
     }
     echo '<br/>';
+
+    echo 'get person with most likes: <br/>';
+    $filtered = $persons->filter(function ($person, $key) use ($persons) {
+        return $person->likes == $persons->max('likes');
+    });
+    foreach ($filtered as $person) {
+        echo $person . '<br>';
+    }
+    echo '<br/>';
+
+    echo 'get person with min likes: <br/>';
+    $filtered = $persons->filter(function ($person, $key) use ($persons) {
+        return $person->likes == $persons->min('likes');
+    });
+    foreach ($filtered as $person) {
+        echo $person . '<br>';
+    }
+    echo '<br/>';
 });
 
 Route::get('/db3', function () {
@@ -324,11 +363,24 @@ Route::get('/db3', function () {
         return [$person->id => $filtered];
     });
     // dd($multiplied);
+    $names = $persons->mapWithKeys(function ($person) {
+        return [$person->id => [$person->name, $person->age]];
+    });
     foreach ($multiplied as $index => $value) {
-        echo 'index: ' . $index . ' </br>';
+        echo 'name: ' . $names[$index][0] . ', age: ' . $names[$index][1] . '</br>';
         foreach ($value as $test) {
             echo $test . '<br>';
         }
+    }
+    echo '<br/>';
+
+    echo 'map to groups: <br/>';
+    $grouped = $persons->mapToGroups(function ($item, $key) {
+        return [$item['likes'] => $item['name']];
+    });
+    $grouped->toArray();
+    foreach ($grouped as $likes => $name) {
+        echo $likes . ' => ' . $name . '<br/>';
     }
     echo '<br/>';
 });
