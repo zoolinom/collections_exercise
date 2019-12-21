@@ -64,6 +64,16 @@ Route::get('/', function () {
     }
     echo '<br/>';
 
+    echo 'first: <br/>';
+    echo $collection->first();
+    echo '<br/><br/>';
+
+    echo 'first > 3: <br/>';
+    echo $collection->first(function ($value, $key) {
+        return $value > 3;
+    });
+    echo '<br/><br/>';
+
     echo 'firstWhere: <br/>';
     $collection3 = collect([
         ['name' => 'Regena', 'age' => 57],
@@ -82,6 +92,10 @@ Route::get('/', function () {
         echo $key . '->' . $value . '<br>';
     }
     echo '<br/>';
+
+    echo 'contains 3: <br/>';
+    echo $collection->contains(3);
+    echo '<br/><br/>';
 
     echo 'groupBy: <br/>';
     $collection4 = collect([
@@ -124,6 +138,22 @@ Route::get('/', function () {
 
 Route::get('/db', function () {
     $persons = Person::all();
+
+    echo 'first person: <br/>';
+    echo $persons->first();
+    echo '<br/><br/>';
+
+    echo 'first person whose likes are < 15: <br/>';
+    echo $persons->first(function ($person, $key) {
+        return $person->likes < 15;
+    });
+    echo '<br/><br/>';
+
+    echo 'contains person older than 50: <br/>';
+    echo $persons->contains(function ($person) {
+        return $person->age > 50;
+    });
+    echo '<br/><br/>';
 
     echo 'groupBy age: <br/>';
     $groupAge = $persons->groupBy('age')->all();
