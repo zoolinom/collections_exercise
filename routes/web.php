@@ -16,6 +16,9 @@ use App\Person;
 Route::get('/', function () {
     // return view('welcome');
 
+    $persons = Person::all();
+    $person = Person::where('age', '>', 50)->get();
+
     $collection = collect([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
 
     echo 'Average: ' . $collection->avg();
@@ -338,6 +341,16 @@ Route::get('/db2', function () {
         echo $person . '<br>';
     }
     echo '<br/>';
+
+    echo 'map to groups (likes => name): <br/>';
+    $grouped = $persons->mapToGroups(function ($item, $key) {
+        return [$item['likes'] => $item['name']];
+    });
+    $grouped->toArray();
+    foreach ($grouped as $likes => $name) {
+        echo $likes . ' => ' . $name . '<br/>';
+    }
+    echo '<br/>';
 });
 
 Route::get('/db3', function () {
@@ -374,13 +387,36 @@ Route::get('/db3', function () {
     }
     echo '<br/>';
 
-    echo 'map to groups: <br/>';
-    $grouped = $persons->mapToGroups(function ($item, $key) {
+    echo 'map to groups (sorted by likes) : <br/>';
+    $grouped = $persons->sortBy('likes')->mapToGroups(function ($item, $key) {
         return [$item['likes'] => $item['name']];
     });
     $grouped->toArray();
     foreach ($grouped as $likes => $name) {
         echo $likes . ' => ' . $name . '<br/>';
     }
+    echo '<br/>';
+
+    echo 'add languages: </br>';
+    $languages = [['C', 'C++'], ['PHP'], ['Javascript'], ['C#', 'APS', '.NET'], ['GO', 'Erlang'], ['JAVA'], ['React', 'Vue', 'Angular']];
+    $lang = $persons->map(function ($item, $key) use ($languages) {
+        return [$item->name => $languages[$item->id - 1]];
+    });
+
+    $lang->each(function ($item, $key) {
+        echo array_keys($item)[0] . ' knows: ' . implode(', ', array_values($item[array_keys($item)[0]])) . '</br>';
+    });
+    echo '<br/>';
+
+    echo 'add languages: </br>';
+    $languages = [['C', 'C++'], ['PHP'], ['Javascript'], ['C#', 'APS', '.NET'], ['GO', 'Erlang'], ['JAVA'], ['React', 'Vue', 'Angular']];
+    $lang = $persons->map(function ($item, $key) use ($languages) {
+        return [$item->id => $languages[$item->id - 1]];
+    });
+
+    $lang->each(function ($item, $key) {
+        $name = Person::where('id', $key + 1)->pluck('name')->first();
+        echo $name . ' knows: ' . implode(', ', array_values($item[$key + 1])) . '</br>';
+    });
     echo '<br/>';
 });
