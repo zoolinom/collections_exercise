@@ -119,6 +119,16 @@ Route::get('/', function () {
     }
     echo '<br/>';
 
+    echo 'merge: <br/>';
+    $collection2 = collect(['product_id' => 1, 'price' => 100]);
+    $merged = $collection2->merge(['price' => 200, 'discount' => 50]);
+
+    $mer = $merged->all();
+    foreach ($mer as $key => $value) {
+        echo $key . '->' . $value . '<br>';
+    }
+    echo '<br/>';
+
     echo 'pluck: <br/>';
     $plucked = $collection4->pluck('name')->all();
     foreach ($plucked as $value) {
@@ -271,6 +281,12 @@ Route::get('/db', function () {
         });
     });
     echo $map;
+
+    // echo 'merge:<br/>';
+    // //dd($persons);
+    // $collection = collect(['name' => 'Tom']);
+    // $merged = $persons->merge($collection);
+    // dd($merged);
 });
 
 Route::get('/db2', function () {
@@ -351,6 +367,17 @@ Route::get('/db2', function () {
     //dd($multiplied);
     foreach ($multiplied as $person) {
         echo $person . '<br>';
+    }
+    echo '<br/>';
+
+    echo 'get people with age >= 42 and get name and likes: <br/>';
+    $filtered = $persons->filter(function ($person) {
+        return $person->age >= 42;
+    })->values()->map(function ($item) {
+        return ['name' => $item->name, 'likes' => $item->likes];
+    });
+    foreach ($filtered as $person) {
+        echo $person['name'] . ' => ' . $person['likes'] . '<br>';
     }
     echo '<br/>';
 
