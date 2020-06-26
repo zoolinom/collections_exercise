@@ -144,6 +144,46 @@ Route::get('/', function () {
         echo $value . '<br>';
     }
     echo '<br/>';
+
+    echo 'reduce, carry start with 0: <br/>';
+    $collection = collect([1, 2, 3]);
+    $total = $collection->reduce(function ($carry, $item) {
+        return $carry + $item;
+    }, 0);
+    echo 'Total: ' . $total . '</br>';
+    echo '<br/>';
+
+    echo 'reduce, carry start with 1: <br/>';
+    $collection = collect([1, 2, 3]);
+    $total = $collection->reduce(function ($carry, $item) {
+        return $carry + $item;
+    }, 1);
+    echo 'Total: ' . $total . '</br>';
+    echo '<br/>';
+
+    echo 'reduce, carry start with 0, one element in array: <br/>';
+    $collection = collect([1]);
+    $total = $collection->reduce(function ($carry, $item) {
+        return $carry + $item;
+    }, 0);
+    echo 'Total: ' . $total . '</br>';
+    echo '<br/>';
+
+    echo 'reduce, carry start with 0, one element in array: <br/>';
+    $collection = collect([1]);
+    $total = $collection->reduce(function ($carry, $item) {
+        return $carry + $item;
+    }, 1);
+    echo 'Total: ' . $total . '</br>';
+    echo '<br/>';
+
+    echo 'reduce, carry start with 0, one element in array: <br/>';
+    $collection = collect([['price' => 10, 'quantity' => 1]]);
+    $total = $collection->reduce(function ($carry, $item) {
+        return $carry + ($item['price'] * $item['quantity']);
+    }, 1);
+    echo 'Total: ' . $total . '</br>';
+    echo '<br/>';
 });
 
 Route::get('/db', function () {
